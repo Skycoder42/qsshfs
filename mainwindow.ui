@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>539</width>
-    <height>391</height>
+    <width>575</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="toolButtonStyle">
@@ -50,7 +50,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>539</width>
+     <width>575</width>
      <height>23</height>
     </rect>
    </property>

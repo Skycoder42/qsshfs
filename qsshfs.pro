@@ -23,16 +23,19 @@ include(./QtUtils/DialogMaster/dialogmaster.pri)
 HEADERS  += mainwindow.h \
 	editremotedialog.h \
 	mountmodel.h \
-	mountinfo.h
+	mountinfo.h \
+    mountdialog.h
 
 SOURCES += main.cpp\
 		mainwindow.cpp \
 	editremotedialog.cpp \
 	mountmodel.cpp \
-	mountinfo.cpp
+	mountinfo.cpp \
+    mountdialog.cpp
 
 FORMS    += mainwindow.ui \
-	editremotedialog.ui
+	editremotedialog.ui \
+    mountdialog.ui
 
 RESOURCES += \
 	res.qrc

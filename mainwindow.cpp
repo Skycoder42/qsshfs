@@ -1,5 +1,6 @@
 #include "editremotedialog.h"
 #include "mainwindow.h"
+#include "mountdialog.h"
 #include "ui_mainwindow.h"
 #include <dialogmaster.h>
 
@@ -70,5 +71,21 @@ void MainWindow::on_actionRemove_Host_triggered()
 	if(index.isValid()) {
 		if(DialogMaster::question(this, tr("Do you really want to remove the selected mount?")))
 			model->removeMount(index);
+	}
+}
+
+void MainWindow::on_actionMount_triggered(bool checked)
+{
+	auto index = sortModel->mapToSource(ui->treeView->currentIndex());
+	if(index.isValid()) {
+		if(checked) {
+			auto mounted = MountDialog::mount(model->mount(index), this);
+			model->updateMounted(index, mounted);
+			ui->actionMount->setChecked(mounted);
+		} else {
+			auto unmounted = MountDialog::unmount(model->mount(index), this);
+			model->updateMounted(index, !unmounted);
+			ui->actionMount->setChecked(!unmounted);
+		}
 	}
 }
