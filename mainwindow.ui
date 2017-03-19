@@ -128,6 +128,9 @@
    </property>
   </action>
   <action name="actionEdit_Host">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset theme="gtk-edit">
      <normaloff>.</normaloff>.</iconset>
@@ -140,6 +143,9 @@
    </property>
   </action>
   <action name="actionRemove_Host">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset theme="list-remove">
      <normaloff>.</normaloff>.</iconset>
@@ -155,6 +161,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset theme="gtk-connect">
      <normaloff>.</normaloff>.</iconset>
@@ -167,6 +176,9 @@
    </property>
   </action>
   <action name="actionOpen_Folder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset theme="document-open-folder">
      <normaloff>.</normaloff>.</iconset>

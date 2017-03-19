@@ -55,7 +55,8 @@
      <item>
       <widget class="QToolButton" name="toolButton">
        <property name="icon">
-        <iconset theme="gtk-add"/>
+        <iconset theme="gtk-add">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -107,8 +108,21 @@
    </item>
    <item row="4" column="1">
     <widget class="QPathEdit" name="localMountpointPathEdit">
+     <property name="style">
+      <enum>QPathEdit::JoinedButton</enum>
+     </property>
      <property name="dialogButtonIcon">
-      <iconset theme="dialog-object-properties"/>
+      <iconset theme="dialog-object-properties">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <property name="pathMode">
+      <enum>QPathEdit::ExistingFolder</enum>
+     </property>
+     <property name="dialogOptions">
+      <set>QFileDialog::DontResolveSymlinks|QFileDialog::ShowDirsOnly</set>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
