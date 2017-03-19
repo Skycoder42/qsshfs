@@ -26,6 +26,8 @@ private slots:
 	void on_actionEdit_Host_triggered();
 	void on_actionRemove_Host_triggered();
 	void on_actionMount_triggered(bool checked);
+	void on_actionOpen_Folder_triggered();
+	void on_actionAbout_triggered();
 
 private:
 	Ui::MainWindow *ui;

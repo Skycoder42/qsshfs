@@ -76,9 +76,6 @@
     </property>
     <addaction name="actionMount"/>
     <addaction name="actionOpen_Folder"/>
-    <addaction name="separator"/>
-    <addaction name="actionMount_all"/>
-    <addaction name="actionUnmount_all"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

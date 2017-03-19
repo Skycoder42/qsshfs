@@ -1,6 +1,7 @@
 #include "editremotedialog.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDesktopServices>
 #include <dialogmaster.h>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -104,4 +105,21 @@ void MainWindow::on_actionMount_triggered(bool checked)
 		else
 			model->unmount(index);
 	}
+}
+
+void MainWindow::on_actionOpen_Folder_triggered()
+{
+	auto index = sortModel->mapToSource(ui->treeView->currentIndex());
+	if(index.isValid()) {
+		auto info = model->mountInfo(index);
+		QDesktopServices::openUrl(QUrl::fromLocalFile(info.localPath));
+	}
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+	DialogMaster::about(this,
+						tr("A gui wrapper around sshfs"),
+						true,
+						QUrl(QStringLiteral("https://github.com/Skycoder42")));
 }
