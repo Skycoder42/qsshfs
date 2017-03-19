@@ -1,0 +1,3 @@
+[submodule "QPathEdit"]
+	path = QPathEdit
+	url = git@github.com:Skycoder42/QPathEdit.git

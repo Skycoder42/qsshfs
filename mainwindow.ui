@@ -23,9 +23,6 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTreeView" name="treeView">
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
@@ -111,7 +108,8 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
    <property name="icon">
-    <iconset theme="gtk-quit"/>
+    <iconset theme="gtk-quit">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Exit</string>
@@ -119,7 +117,8 @@
   </action>
   <action name="actionAdd_Host">
    <property name="icon">
-    <iconset theme="list-add"/>
+    <iconset theme="list-add">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Add Host</string>
@@ -130,7 +129,8 @@
   </action>
   <action name="actionEdit_Host">
    <property name="icon">
-    <iconset theme="gtk-edit"/>
+    <iconset theme="gtk-edit">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Edit Host</string>
@@ -141,7 +141,8 @@
   </action>
   <action name="actionRemove_Host">
    <property name="icon">
-    <iconset theme="list-remove"/>
+    <iconset theme="list-remove">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Remove Host</string>
@@ -155,7 +156,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="gtk-connect"/>
+    <iconset theme="gtk-connect">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Mount</string>
@@ -166,7 +168,8 @@
   </action>
   <action name="actionOpen_Folder">
    <property name="icon">
-    <iconset theme="document-open-folder"/>
+    <iconset theme="document-open-folder">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Open &amp;Folder</string>
@@ -177,7 +180,8 @@
   </action>
   <action name="actionMount_all">
    <property name="icon">
-    <iconset theme="gtk-connect"/>
+    <iconset theme="gtk-connect">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Mount &amp;all</string>
@@ -188,7 +192,8 @@
   </action>
   <action name="actionUnmount_all">
    <property name="icon">
-    <iconset theme="gtk-disconnect"/>
+    <iconset theme="gtk-disconnect">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Unmount all</string>
@@ -199,7 +204,8 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset theme="help-about"/>
+    <iconset theme="help-about">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;About</string>
@@ -207,7 +213,8 @@
   </action>
   <action name="actionAbout_Qt">
    <property name="icon">
-    <iconset theme="qt-logo"/>
+    <iconset theme="qt-logo">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>About &amp;Qt</string>

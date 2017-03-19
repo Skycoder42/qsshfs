@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="main.ico">1489946208_folder-remote-ssh.ico</file>
+    </qresource>
+</RCC>
