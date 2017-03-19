@@ -2,13 +2,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDesktopServices>
+#include <QSettings>
 #include <dialogmaster.h>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	model(new MountModel(this)),
-	sortModel(new QSortFilterProxyModel(this))
+	sortModel(new QSortFilterProxyModel(this)),
+	trayIco(new QSystemTrayIcon(windowIcon(), this))
 {
 	ui->setupUi(this);
 	ui->treeView->setParent(this);
@@ -17,6 +19,31 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	sortModel->setSourceModel(model);
 	ui->treeView->setModel(sortModel);
+
+	trayIco->setToolTip(QApplication::applicationDisplayName());
+	auto menu = new QMenu(this);
+	menu->addAction(QIcon::fromTheme(QStringLiteral("window-new")), tr("Show main window"),
+					this, &MainWindow::show);
+	menu->addMenu(model->createMountMenu(menu));
+	menu->addSeparator();
+	auto runAction = menu->addAction(QIcon::fromTheme(QStringLiteral("games-config-options")), tr("Keep running"),
+									 qApp, [](bool triggered){
+		QApplication::setQuitOnLastWindowClosed(!triggered);
+	});
+	runAction->setCheckable(true);
+	menu->addAction(QIcon::fromTheme(QStringLiteral("gtk-quit")), tr("Quit"),
+					qApp, &QApplication::quit);
+	trayIco->setContextMenu(menu);
+	trayIco->setVisible(true);
+
+	QSettings settings;
+	settings.beginGroup(QStringLiteral("gui"));
+	restoreGeometry(settings.value(QStringLiteral("geom")).toByteArray());
+	restoreState(settings.value(QStringLiteral("state")).toByteArray());
+	ui->treeView->header()->restoreState(settings.value(QStringLiteral("header")).toByteArray());
+	runAction->setChecked(settings.value(QStringLiteral("background"), true).toBool());
+	QApplication::setQuitOnLastWindowClosed(!runAction->isChecked());
+	settings.endGroup();
 
 	connect(ui->actionExit, &QAction::triggered,
 			qApp, &QApplication::quit);
@@ -32,6 +59,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+	QSettings settings;
+	settings.beginGroup(QStringLiteral("gui"));
+	settings.setValue(QStringLiteral("geom"), saveGeometry());
+	settings.setValue(QStringLiteral("state"), saveState());
+	settings.setValue(QStringLiteral("header"), ui->treeView->header()->saveState());
+	settings.setValue(QStringLiteral("background"), !QApplication::quitOnLastWindowClosed());
+	settings.endGroup();
+
 	delete ui;
 }
 
@@ -40,6 +75,7 @@ void MainWindow::mountError(const QString &name, const QString &errorLog, int ex
 	reloadCurrent(ui->treeView->currentIndex());
 
 	auto conf = DialogMaster::createCritical(tr("Failed to mount/unmount %1").arg(name));
+	conf.parent = isVisible() ? this : nullptr;
 	conf.title = conf.text;
 	if(exitCode == -1){
 		conf.text = tr("The mount or unmount operation failed! Check the details for the "

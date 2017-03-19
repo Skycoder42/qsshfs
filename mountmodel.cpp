@@ -5,7 +5,9 @@
 MountModel::MountModel(QObject *parent) :
 	QAbstractTableModel(parent),
 	_controller(new MountController(this)),
-	_names()
+	_names(),
+	_mntMenu(nullptr),
+	_mntActions()
 {
 	connect(_controller, &MountController::mountChanged,
 			this, &MountModel::updateMounted);
@@ -31,6 +33,20 @@ MountController *MountModel::controller()
 	return _controller;
 }
 
+QMenu *MountModel::createMountMenu(QWidget *parent)
+{
+	if(!_mntMenu) {
+		_mntMenu = new QMenu(tr("Mounts"), parent);
+		_mntMenu->setIcon(QIcon::fromTheme(QStringLiteral("gtk-connect")));
+
+		foreach (auto name, _names)
+			addMntAction(name);
+
+	}
+
+	return _mntMenu;
+}
+
 MountInfo MountModel::mountInfo(const QModelIndex &index) const
 {
 	if (!index.isValid() ||
@@ -43,10 +59,17 @@ MountInfo MountModel::mountInfo(const QModelIndex &index) const
 
 void MountModel::addMountInfo(const MountInfo &info)
 {
+	if(_names.contains(info.name)) {
+		//TODO show error
+		return;
+	}
+
 	beginInsertRows(QModelIndex(), _names.size(), _names.size());
 	_controller->addMount(info);
 	_names.append(info.name);
+	addMntAction(info.name);
 	endInsertRows();
+
 	saveState();
 }
 
@@ -57,11 +80,20 @@ void MountModel::updateMountInfo(const QModelIndex &index, const MountInfo &info
 		index.row() >= _names.size())
 		return;
 
+	if(_names[index.row()] != info.name) {
+		//TODO show error
+		return;
+	}
+	if(_controller->isMounted(info.name)) {
+		//TODO show error
+		return;
+	}
+
 	_controller->removeMount(_names[index.row()]);
 	_controller->addMount(info);
-	_names[index.row()] = info.name;
 	emit dataChanged(index.sibling(index.row(), 0),
 					 index.sibling(index.row(), 2));
+
 	saveState();
 }
 
@@ -72,10 +104,20 @@ void MountModel::removeMountInfo(const QModelIndex &index)
 		index.row() >= _names.size())
 		return;
 
+	auto name = _names[index.row()];
+	if(_controller->isMounted(name)) {
+		//TODO show error
+		return;
+	}
+
 	beginRemoveRows(index.parent(), index.row(), index.row());
-	_controller->removeMount(_names[index.row()]);
+	auto act = _mntActions.take(name);
+	if(act)
+		act->deleteLater();
 	_names.removeAt(index.row());
+	_controller->removeMount(name);
 	endRemoveRows();
+
 	saveState();
 }
 
@@ -182,6 +224,37 @@ void MountModel::updateMounted(const QString &name)
 	auto mIndex = index(_names.indexOf(name), 2);
 	if(mIndex.isValid())
 		emit dataChanged(mIndex, mIndex, {Qt::CheckStateRole});
+
+	auto act = _mntActions.value(name);
+	if(act)
+		act->setChecked(_controller->isMounted(name));
+}
+
+void MountModel::triggered(bool checked)
+{
+	auto act = qobject_cast<QAction*>(sender());
+	if(act) {
+		auto name = _mntActions.key(act);
+		if(!name.isEmpty()) {
+			if(checked)
+				_controller->mount(name);
+			else
+				_controller->unmount(name);
+			act->setChecked(!checked);
+		}
+	}
+}
+
+void MountModel::addMntAction(const QString &name)
+{
+	if(_mntMenu) {
+		auto act = _mntMenu->addAction(name);
+		act->setCheckable(true);
+		act->setChecked(_controller->isMounted(name));
+		connect(act, &QAction::triggered,
+				this, &MountModel::triggered);
+		_mntActions.insert(name, act);
+	}
 }
 
 void MountModel::saveState()

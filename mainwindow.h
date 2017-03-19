@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QSortFilterProxyModel>
+#include <QSystemTrayIcon>
 #include "mountmodel.h"
 
 namespace Ui {
@@ -33,6 +34,8 @@ private:
 	Ui::MainWindow *ui;
 	MountModel *model;
 	QSortFilterProxyModel *sortModel;
+
+	QSystemTrayIcon *trayIco;
 };
 
 #endif // MAINWINDOW_H

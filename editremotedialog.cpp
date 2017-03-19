@@ -12,6 +12,7 @@ MountInfo EditRemoteDialog::editInfo(const MountInfo &oldInfo, QWidget *parent)
 
 	if(oldInfo.isValid()) {
 		dialog.ui->nameLineEdit->setText(oldInfo.name);
+		dialog.ui->nameLineEdit->setEnabled(false);
 		dialog.ui->hostnameComboBox->setCurrentText(oldInfo.hostName);
 		dialog.ui->userLineEdit->setText(oldInfo.userOverwrite);
 		dialog.ui->remoteMountpointLineEdit->setText(oldInfo.remotePath);

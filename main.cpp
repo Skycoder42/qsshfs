@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
 	QApplication::setWindowIcon(QIcon(QStringLiteral(":/icons/main.ico")));
 
 	MainWindow w;
-	w.show();
+	if(!QApplication::arguments().contains(QStringLiteral("--hidden")))
+		w.show();
 
 	return a.exec();
 }

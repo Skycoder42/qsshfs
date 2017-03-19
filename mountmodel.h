@@ -2,6 +2,7 @@
 #define MOUNTMODEL_H
 
 #include <QAbstractTableModel>
+#include <QMenu>
 #include "mountinfo.h"
 #include "mountcontroller.h"
 
@@ -13,6 +14,8 @@ public:
 	explicit MountModel(QObject *parent = nullptr);
 
 	MountController *controller();
+
+	QMenu *createMountMenu(QWidget *parent);
 
 	MountInfo mountInfo(const QModelIndex &index) const;
 	void addMountInfo(const MountInfo &info);
@@ -33,10 +36,16 @@ public:
 private slots:
 	void updateMounted(const QString &name);
 
+	void triggered(bool checked);
+
 private:
 	MountController *_controller;
 	QStringList _names;
 
+	QMenu *_mntMenu;
+	QHash<QString, QAction*> _mntActions;
+
+	void addMntAction(const QString &name);
 	void saveState();
 };
 

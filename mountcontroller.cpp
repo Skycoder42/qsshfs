@@ -1,6 +1,7 @@
 #include "mountcontroller.h"
 
 #include <QDir>
+#include <QDebug>
 
 MountController::MountController(QObject *parent) :
 	QObject(parent),
@@ -20,6 +21,16 @@ bool MountController::isMounted(const QString &name)
 void MountController::addMount(const MountInfo &info)
 {
 	_mounts.insert(info.name, info);
+
+	//check mount state
+	QProcess state;
+	state.start(QStringLiteral("mount -l -t fuse.sshfs"));
+	if(state.waitForFinished(1000)) {
+		auto data = state.readAll();
+		if(data.contains(QDir(info.localPath).canonicalPath().toUtf8()))
+			_mounts[info.name].mounted = true;
+	} else
+		qWarning() << "Unable to get mount state";
 }
 
 void MountController::removeMount(const QString &name)
