@@ -18,7 +18,9 @@ public:
 	~MainWindow();
 
 private slots:
-	void reloadCurrent(const QModelIndex &index);
+	void mountError(const QString &name, const QString &errorLog, int exitCode);
+
+	void reloadCurrent(const QModelIndex &uiIndex);
 
 	void on_actionAdd_Host_triggered();
 	void on_actionEdit_Host_triggered();

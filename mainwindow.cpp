@@ -1,6 +1,5 @@
 #include "editremotedialog.h"
 #include "mainwindow.h"
-#include "mountdialog.h"
 #include "ui_mainwindow.h"
 #include <dialogmaster.h>
 
@@ -25,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->treeView->selectionModel(), &QItemSelectionModel::currentChanged,
 			this, &MainWindow::reloadCurrent);
+
+	connect(model->controller(), &MountController::mountError,
+			this, &MainWindow::mountError);
 }
 
 MainWindow::~MainWindow()
@@ -32,18 +34,37 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::reloadCurrent(const QModelIndex &index)
+void MainWindow::mountError(const QString &name, const QString &errorLog, int exitCode)
 {
-	ui->actionEdit_Host->setEnabled(index.isValid());
+	reloadCurrent(ui->treeView->currentIndex());
+
+	auto conf = DialogMaster::createCritical(tr("Failed to mount/unmount %1").arg(name));
+	conf.title = conf.text;
+	if(exitCode == -1){
+		conf.text = tr("The mount or unmount operation failed! Check the details for the "
+					   "generated error log");
+	} else {
+		conf.text = tr("The mount or unmount operation failed with exit code %1! Check the details for the "
+					   "generated error log")
+					.arg(exitCode);
+	}
+	conf.details = errorLog;
+	DialogMaster::messageBox(conf);
+}
+
+void MainWindow::reloadCurrent(const QModelIndex &uiIndex)
+{
+	auto index = sortModel->mapToSource(uiIndex);
+	ui->actionMount->setEnabled(index.isValid());
 
 	if(index.isValid()) {
 		auto mounted = model->isMounted(index);
+		ui->actionEdit_Host->setEnabled(!mounted);
 		ui->actionRemove_Host->setEnabled(!mounted);
-		ui->actionMount->setEnabled(!mounted);
 		ui->actionMount->setChecked(mounted);
 	} else {
+		ui->actionEdit_Host->setEnabled(false);
 		ui->actionRemove_Host->setEnabled(false);
-		ui->actionMount->setEnabled(false);
 		ui->actionMount->setChecked(false);
 	}
 }
@@ -52,16 +73,16 @@ void MainWindow::on_actionAdd_Host_triggered()
 {
 	auto info = EditRemoteDialog::editInfo({}, this);
 	if(info.isValid())
-		model->addMount(info);
+		model->addMountInfo(info);
 }
 
 void MainWindow::on_actionEdit_Host_triggered()
 {
 	auto index = sortModel->mapToSource(ui->treeView->currentIndex());
 	if(index.isValid()) {
-		auto info = EditRemoteDialog::editInfo(model->mount(index), this);
+		auto info = EditRemoteDialog::editInfo(model->mountInfo(index), this);
 		if(info.isValid())
-			model->updateMount(index, info);
+			model->updateMountInfo(index, info);
 	}
 }
 
@@ -70,7 +91,7 @@ void MainWindow::on_actionRemove_Host_triggered()
 	auto index = sortModel->mapToSource(ui->treeView->currentIndex());
 	if(index.isValid()) {
 		if(DialogMaster::question(this, tr("Do you really want to remove the selected mount?")))
-			model->removeMount(index);
+			model->removeMountInfo(index);
 	}
 }
 
@@ -78,14 +99,9 @@ void MainWindow::on_actionMount_triggered(bool checked)
 {
 	auto index = sortModel->mapToSource(ui->treeView->currentIndex());
 	if(index.isValid()) {
-		if(checked) {
-			auto mounted = MountDialog::mount(model->mount(index), this);
-			model->updateMounted(index, mounted);
-			ui->actionMount->setChecked(mounted);
-		} else {
-			auto unmounted = MountDialog::unmount(model->mount(index), this);
-			model->updateMounted(index, !unmounted);
-			ui->actionMount->setChecked(!unmounted);
-		}
+		if(checked)
+			model->mount(index);
+		else
+			model->unmount(index);
 	}
 }

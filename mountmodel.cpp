@@ -4,8 +4,12 @@
 
 MountModel::MountModel(QObject *parent) :
 	QAbstractTableModel(parent),
-	_data()
+	_controller(new MountController(this)),
+	_names()
 {
+	connect(_controller, &MountController::mountChanged,
+			this, &MountModel::updateMounted);
+
 	QSettings settings;
 	auto max = settings.beginReadArray(QStringLiteral("mounts"));
 	for(auto i = 0; i < max; i++) {
@@ -16,50 +20,61 @@ MountModel::MountModel(QObject *parent) :
 		data.userOverwrite = settings.value(QStringLiteral("userOverwrite")).toString();
 		data.remotePath = settings.value(QStringLiteral("remotePath")).toString();
 		data.localPath = settings.value(QStringLiteral("localPath")).toString();
-		_data.append({data, false});
+		_controller->addMount(data);
+		_names.append(data.name);
 	}
 	settings.endArray();
 }
 
-MountInfo MountModel::mount(const QModelIndex &index) const
+MountController *MountModel::controller()
+{
+	return _controller;
+}
+
+MountInfo MountModel::mountInfo(const QModelIndex &index) const
 {
 	if (!index.isValid() ||
 		index.row() < 0 ||
-		index.row() >= _data.size())
+		index.row() >= _names.size())
 		return {};
 	else
-		return _data[index.row()].first;
+		return _controller->mountInfo(_names[index.row()]);
 }
 
-void MountModel::addMount(const MountInfo &info)
+void MountModel::addMountInfo(const MountInfo &info)
 {
-	beginInsertRows(QModelIndex(), _data.size(), _data.size());
-	_data.append({info, false});
+	beginInsertRows(QModelIndex(), _names.size(), _names.size());
+	_controller->addMount(info);
+	_names.append(info.name);
 	endInsertRows();
 	saveState();
 }
 
-void MountModel::updateMount(const QModelIndex &index, const MountInfo &info)
+void MountModel::updateMountInfo(const QModelIndex &index, const MountInfo &info)
 {
 	if (!index.isValid() ||
 		index.row() < 0 ||
-		index.row() >= _data.size())
+		index.row() >= _names.size())
 		return;
 
-	_data[index.row()].first = info;
-	emit dataChanged(index, index);
+	_controller->removeMount(_names[index.row()]);
+	_controller->addMount(info);
+	_names[index.row()] = info.name;
+	emit dataChanged(index.sibling(index.row(), 0),
+					 index.sibling(index.row(), 2));
 	saveState();
 }
 
-void MountModel::removeMount(const QModelIndex &index)
+void MountModel::removeMountInfo(const QModelIndex &index)
 {
 	if (!index.isValid() ||
 		index.row() < 0 ||
-		index.row() >= _data.size())
+		index.row() >= _names.size())
 		return;
 
 	beginRemoveRows(index.parent(), index.row(), index.row());
-	_data.removeAt(index.row());
+	_controller->removeMount(_names[index.row()]);
+	_names.removeAt(index.row());
 	endRemoveRows();
 	saveState();
 }
@@ -68,21 +83,30 @@ bool MountModel::isMounted(const QModelIndex &index) const
 {
 	if (!index.isValid() ||
 		index.row() < 0 ||
-		index.row() >= _data.size())
+		index.row() >= _names.size())
 		return false;
 	else
-		return _data[index.row()].second;
+		return _controller->isMounted(_names[index.row()]);
 }
 
-void MountModel::updateMounted(const QModelIndex &index, bool mounted)
+void MountModel::mount(const QModelIndex &index)
 {
 	if (!index.isValid() ||
 		index.row() < 0 ||
-		index.row() >= _data.size())
+		index.row() >= _names.size())
 		return;
 
-	_data[index.row()].second = mounted;
-	emit dataChanged(index, index);
+	_controller->mount(_names[index.row()]);
+}
+
+void MountModel::unmount(const QModelIndex &index)
+{
+	if (!index.isValid() ||
+		index.row() < 0 ||
+		index.row() >= _names.size())
+		return;
+
+	_controller->unmount(_names[index.row()]);
 }
 
 QVariant MountModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -108,7 +132,7 @@ int MountModel::rowCount(const QModelIndex &parent) const
 	if (parent.isValid())
 		return 0;
 	else
-		return _data.size();
+		return _names.size();
 }
 
 int MountModel::columnCount(const QModelIndex &parent) const
@@ -123,28 +147,28 @@ QVariant MountModel::data(const QModelIndex &index, int role) const
 {
 	if (!index.isValid() ||
 		index.row() < 0 ||
-		index.row() >= _data.size())
+		index.row() >= _names.size())
 		return {};
 
-	auto data = _data[index.row()];
+	auto data = _controller->mountInfo(_names[index.row()]);
 	switch (index.column()) {
 	case 0:
 		if(role == Qt::DisplayRole)
-			return data.first.name;
+			return data.name;
 		break;
 	case 1:
 		if(role == Qt::DisplayRole) {
-			auto host = data.first.hostName;
-			if(!data.first.userOverwrite.isEmpty())
-				host.prepend(data.first.userOverwrite + QLatin1Char('@'));
+			auto host = data.hostName;
+			if(!data.userOverwrite.isEmpty())
+				host.prepend(data.userOverwrite + QLatin1Char('@'));
 			return host;
 		}
 		break;
 	case 2:
 		if(role == Qt::CheckStateRole)
-			return data.second ? Qt::Checked : Qt::Unchecked;
+			return _controller->isMounted(data.name) ? Qt::Checked : Qt::Unchecked;
 		else if(role == Qt::DisplayRole)
-			return data.second ? data.first.localPath : QString();
+			return _controller->isMounted(data.name) ? data.localPath : QString();
 		break;
 	default:
 		break;
@@ -153,12 +177,19 @@ QVariant MountModel::data(const QModelIndex &index, int role) const
 	return {};
 }
 
+void MountModel::updateMounted(const QString &name)
+{
+	auto mIndex = index(_names.indexOf(name), 2);
+	if(mIndex.isValid())
+		emit dataChanged(mIndex, mIndex, {Qt::CheckStateRole});
+}
+
 void MountModel::saveState()
 {
 	QSettings settings;
-	settings.beginWriteArray(QStringLiteral("mounts"), _data.size());
-	for(auto i = 0; i < _data.size(); i++) {
-		const auto &data = _data[i].first;
+	settings.beginWriteArray(QStringLiteral("mounts"), _names.size());
+	for(auto i = 0; i < _names.size(); i++) {
+		const auto &data = _controller->mountInfo(_names[i]);
 		settings.setArrayIndex(i);
 		settings.setValue(QStringLiteral("name"), data.name);
 		settings.setValue(QStringLiteral("hostName"), data.hostName);

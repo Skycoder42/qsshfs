@@ -3,6 +3,7 @@
 
 #include <QAbstractTableModel>
 #include "mountinfo.h"
+#include "mountcontroller.h"
 
 class MountModel : public QAbstractTableModel
 {
@@ -11,13 +12,16 @@ class MountModel : public QAbstractTableModel
 public:
 	explicit MountModel(QObject *parent = nullptr);
 
-	MountInfo mount(const QModelIndex &index) const;
-	void addMount(const MountInfo &info);
-	void updateMount(const QModelIndex &index, const MountInfo &info);
-	void removeMount(const QModelIndex &index);
+	MountController *controller();
+
+	MountInfo mountInfo(const QModelIndex &index) const;
+	void addMountInfo(const MountInfo &info);
+	void updateMountInfo(const QModelIndex &index, const MountInfo &info);
+	void removeMountInfo(const QModelIndex &index);
 
 	bool isMounted(const QModelIndex &index) const;
-	void updateMounted(const QModelIndex &index, bool mounted);
+	void mount(const QModelIndex &index);
+	void unmount(const QModelIndex &index);
 
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
@@ -26,10 +30,12 @@ public:
 
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-private:
-	typedef QPair<MountInfo, bool> MountState;
+private slots:
+	void updateMounted(const QString &name);
 
-	QList<MountState> _data;
+private:
+	MountController *_controller;
+	QStringList _names;
 
 	void saveState();
 };

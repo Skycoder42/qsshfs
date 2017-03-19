@@ -24,18 +24,17 @@ HEADERS  += mainwindow.h \
 	editremotedialog.h \
 	mountmodel.h \
 	mountinfo.h \
-    mountdialog.h
+	mountcontroller.h
 
 SOURCES += main.cpp\
 		mainwindow.cpp \
 	editremotedialog.cpp \
 	mountmodel.cpp \
 	mountinfo.cpp \
-    mountdialog.cpp
+	mountcontroller.cpp
 
 FORMS    += mainwindow.ui \
-	editremotedialog.ui \
-    mountdialog.ui
+	editremotedialog.ui
 
 RESOURCES += \
 	res.qrc
