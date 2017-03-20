@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.1
+Name=Qt sshfs GUI
+Comment=A gui wrapper around sshfs, written in Qt
+Exec=qsshfs
+Icon=qsshfs
+Terminal=false
+Categories=Development;Qt;

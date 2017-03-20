@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/icons">
-        <file alias="main.ico">1489946208_folder-remote-ssh.ico</file>
+        <file alias="main.ico">qsshfs.ico</file>
     </qresource>
 </RCC>
