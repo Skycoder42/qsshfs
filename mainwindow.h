@@ -22,6 +22,7 @@ private slots:
 	void mountError(const QString &name, const QString &errorLog, int exitCode);
 
 	void reloadCurrent(const QModelIndex &uiIndex);
+	void updateAutostart(bool checked);
 
 	void on_actionAdd_Host_triggered();
 	void on_actionEdit_Host_triggered();
@@ -36,6 +37,8 @@ private:
 	QSortFilterProxyModel *sortModel;
 
 	QSystemTrayIcon *trayIco;
+
+	bool isAutostart();
 };
 
 #endif // MAINWINDOW_H

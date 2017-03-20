@@ -31,6 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
 		QApplication::setQuitOnLastWindowClosed(!triggered);
 	});
 	runAction->setCheckable(true);
+	auto startAction = menu->addAction(QIcon::fromTheme(QStringLiteral("system-run")), tr("Autostart"),
+									   this, &MainWindow::updateAutostart);
+	startAction->setCheckable(true);
 	menu->addAction(QIcon::fromTheme(QStringLiteral("gtk-quit")), tr("Quit"),
 					qApp, &QApplication::quit);
 	trayIco->setContextMenu(menu);
@@ -42,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	restoreState(settings.value(QStringLiteral("state")).toByteArray());
 	ui->treeView->header()->restoreState(settings.value(QStringLiteral("header")).toByteArray());
 	runAction->setChecked(settings.value(QStringLiteral("background"), true).toBool());
+	startAction->setChecked(isAutostart());
 	QApplication::setQuitOnLastWindowClosed(!runAction->isChecked());
 	settings.endGroup();
 
@@ -106,6 +110,24 @@ void MainWindow::reloadCurrent(const QModelIndex &uiIndex)
 	}
 }
 
+void MainWindow::updateAutostart(bool checked)
+{
+	auto resPath = QStringLiteral("%1/autostart/%2.sh")
+					.arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))
+					.arg(QCoreApplication::applicationName());
+	if(checked) {
+		QFile file(resPath);
+		if(file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			file.write(QStringLiteral("#!/bin/sh\n%1 --hidden")
+					   .arg(QCoreApplication::applicationName())
+					   .toUtf8());
+			file.close();
+			file.setPermissions(file.permissions() | QFileDevice::ExeUser);
+		}
+	} else
+		QFile::remove(resPath);
+}
+
 void MainWindow::on_actionAdd_Host_triggered()
 {
 	auto info = EditRemoteDialog::editInfo({}, this);
@@ -158,4 +180,12 @@ void MainWindow::on_actionAbout_triggered()
 						tr("A gui wrapper around sshfs"),
 						true,
 						QUrl(QStringLiteral("https://github.com/Skycoder42")));
+}
+
+bool MainWindow::isAutostart()
+{
+	auto resPath = QStringLiteral("%1/autostart/%2.sh")
+					.arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))
+					.arg(QCoreApplication::applicationName());
+	return QFile::exists(resPath);
 }
