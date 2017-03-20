@@ -27,7 +27,7 @@ void MountController::addMount(const MountInfo &info)
 	state.start(QStringLiteral("mount -l -t fuse.sshfs"));
 	if(state.waitForFinished(1000)) {
 		auto data = state.readAll();
-		if(data.contains(QDir(info.localPath).canonicalPath().toUtf8()))
+		if(data.contains(QDir::cleanPath(info.localPath).toUtf8()))
 			_mounts[info.name].mounted = true;
 	} else
 		qWarning() << "Unable to get mount state";
