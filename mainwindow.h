@@ -34,6 +34,8 @@ private slots:
 	void on_actionOpen_Folder_triggered();
 	void on_actionAbout_triggered();
 
+	void on_treeView_activated(const QModelIndex &index);
+
 private:
 	Ui::MainWindow *ui;
 	MountModel *model;

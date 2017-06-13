@@ -212,3 +212,16 @@ bool MainWindow::isAutostart()
 					.arg(QCoreApplication::applicationName());
 	return QFile::exists(resPath);
 }
+
+void MainWindow::on_treeView_activated(const QModelIndex &index)
+{
+	auto srcIndex = sortModel->mapToSource(index);
+	if(srcIndex.isValid()) {
+		if(!model->isMounted(srcIndex))
+			model->mount(srcIndex);
+		else {
+			auto info = model->mountInfo(srcIndex);
+			QDesktopServices::openUrl(QUrl::fromLocalFile(info.localPath));
+		}
+	}
+}
