@@ -44,8 +44,10 @@ void MountController::reloadState()
 	state.start(QStringLiteral("mount -l -t fuse.sshfs"));
 	if(state.waitForFinished(1000)) {
 		auto data = state.readAll();
-		for(auto it = _mounts.begin(); it != _mounts.end(); it++)
+		for(auto it = _mounts.begin(); it != _mounts.end(); it++) {
 			it->mounted = data.contains(QDir::cleanPath(it->info.localPath).toUtf8());
+			emit mountChanged(it->info.name);
+		}
 	} else
 		qWarning() << "Unable to get mount state";
 }
@@ -59,11 +61,13 @@ void MountController::mount(const QString &name)
 		return;
 
 	if(state.process) {
+		emit mountChanged(name);
 		emit mountError(name, tr("Wait for the previous mount/unmount to finish"));
 		return;
 	}
 	auto env = QProcessEnvironment::systemEnvironment();
 	if(!env.contains(QStringLiteral("SSH_ASKPASS"))) {
+		emit mountChanged(name);
 		emit mountError(name, tr("The SSH_ASKPASS environment variable must be set!\n"
 								 "You can use for example \"ksshaskpass\""));
 		return;
@@ -72,6 +76,7 @@ void MountController::mount(const QString &name)
 	QDir mntDir(state.info.localPath);
 	if(!mntDir.exists()){
 		if(!mntDir.mkpath(QStringLiteral("."))) {
+			emit mountChanged(name);
 			emit mountError(name,
 							tr("Failed to create mount directory %1")
 							.arg(mntDir.absolutePath()));
@@ -98,6 +103,7 @@ void MountController::unmount(const QString &name)
 		return;
 
 	if(state.process) {
+		emit mountChanged(name);
 		emit mountError(name, tr("Wait for the previous mount/unmount to finish"));
 		return;
 	}
@@ -118,11 +124,13 @@ QProcess *MountController::createProcess(const QString &name, bool forMount)
 	process->setProcessChannelMode(QProcess::MergedChannels);
 	connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
 			this, [=](int exitCode, QProcess::ExitStatus exitStatus){
-		if(exitStatus != QProcess::NormalExit)
+		if(exitStatus != QProcess::NormalExit) {
+			emit mountChanged(name);
 			emit mountError(name, process->errorString());
-		else if(exitCode != EXIT_SUCCESS)
+		} else if(exitCode != EXIT_SUCCESS) {
+			emit mountChanged(name);
 			emit mountError(name, QString::fromUtf8(process->readAll()), exitCode);
-		else {
+		} else {
 			_mounts[name].mounted = forMount;
 			emit mountChanged(name);
 		}

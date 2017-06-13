@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	menu->addAction(QIcon::fromTheme(QStringLiteral("window-new")), tr("Show main window"),
 					this, &MainWindow::show);
 	menu->addMenu(model->createMountMenu(menu));
+	menu->addAction(ui->action_Reload_Mounts);
 	menu->addSeparator();
 	auto runAction = menu->addAction(QIcon::fromTheme(QStringLiteral("games-config-options")), tr("Keep running"),
 									 qApp, [](bool triggered){

@@ -41,7 +41,6 @@ QMenu *MountModel::createMountMenu(QWidget *parent)
 
 		foreach (auto name, _names)
 			addMntAction(name);
-
 	}
 
 	return _mntMenu;
