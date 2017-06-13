@@ -151,6 +151,13 @@ void MountModel::unmount(const QModelIndex &index)
 	_controller->unmount(_names[index.row()]);
 }
 
+void MountModel::reload()
+{
+	beginResetModel();
+	_controller->reloadState();
+	endResetModel();
+}
+
 QVariant MountModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if(orientation != Qt::Horizontal || role != Qt::DisplayRole)

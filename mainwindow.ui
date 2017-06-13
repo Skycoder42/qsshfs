@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>575</width>
-    <height>400</height>
+    <height>394</height>
    </rect>
   </property>
   <property name="toolButtonStyle">
@@ -74,6 +74,8 @@
     <property name="title">
      <string>&amp;Action</string>
     </property>
+    <addaction name="action_Reload_Mounts"/>
+    <addaction name="separator"/>
     <addaction name="actionMount"/>
     <addaction name="actionOpen_Folder"/>
    </widget>
@@ -98,10 +100,9 @@
    </attribute>
    <addaction name="actionAdd_Host"/>
    <addaction name="separator"/>
+   <addaction name="action_Reload_Mounts"/>
    <addaction name="actionMount"/>
    <addaction name="actionOpen_Folder"/>
-   <addaction name="actionEdit_Host"/>
-   <addaction name="actionRemove_Host"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
@@ -228,6 +229,14 @@
    </property>
    <property name="text">
     <string>About &amp;Qt</string>
+   </property>
+  </action>
+  <action name="action_Reload_Mounts">
+   <property name="icon">
+    <iconset theme="view-refresh"/>
+   </property>
+   <property name="text">
+    <string>&amp;Reload Mounts</string>
    </property>
   </action>
  </widget>

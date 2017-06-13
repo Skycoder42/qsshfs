@@ -53,7 +53,13 @@ MainWindow::MainWindow(QWidget *parent) :
 			qApp, &QApplication::quit);
 	connect(ui->actionAbout_Qt, &QAction::triggered,
 			qApp, &QApplication::aboutQt);
+	connect(ui->action_Reload_Mounts, &QAction::triggered,
+			model, &MountModel::reload);
 
+	connect(model, &MountModel::modelReset,
+			this, [this](){
+		reloadCurrent(QModelIndex());
+	});
 	connect(ui->treeView->selectionModel(), &QItemSelectionModel::currentChanged,
 			this, &MainWindow::reloadCurrent);
 

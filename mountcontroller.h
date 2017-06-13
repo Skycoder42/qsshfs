@@ -20,6 +20,7 @@ public:
 public slots:
 	void addMount(const MountInfo &info);
 	void removeMount(const QString &name);
+	void reloadState();
 
 	void mount(const QString &name);
 	void unmount(const QString &name);

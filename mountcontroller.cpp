@@ -38,6 +38,18 @@ void MountController::removeMount(const QString &name)
 	_mounts.remove(name);
 }
 
+void MountController::reloadState()
+{
+	QProcess state;
+	state.start(QStringLiteral("mount -l -t fuse.sshfs"));
+	if(state.waitForFinished(1000)) {
+		auto data = state.readAll();
+		for(auto it = _mounts.begin(); it != _mounts.end(); it++)
+			it->mounted = data.contains(QDir::cleanPath(it->info.localPath).toUtf8());
+	} else
+		qWarning() << "Unable to get mount state";
+}
+
 void MountController::mount(const QString &name)
 {
 	if(!_mounts.contains(name))

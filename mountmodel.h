@@ -25,6 +25,7 @@ public:
 	bool isMounted(const QModelIndex &index) const;
 	void mount(const QModelIndex &index);
 	void unmount(const QModelIndex &index);
+	void reload();
 
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
