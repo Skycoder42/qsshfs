@@ -1,0 +1,11 @@
+{
+  "name": "",
+  "description": "",
+  "dependencies": [
+    "de.skycoder42.dialog-master@1.2.5",
+    "de.skycoder42.qpathedit@2.0.0"
+  ],
+  "license": "NONE",
+  "pri_filename": "",
+  "webpage": ""
+}

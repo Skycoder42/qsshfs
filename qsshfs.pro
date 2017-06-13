@@ -17,8 +17,7 @@ DEFINES += "BUNDLE_PREFIX=\\\"$$BUNDLE_PREFIX\\\""
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_ASCII_CAST_WARNINGS
 
-include(./QPathEdit/qpathedit.pri)
-include(./QtUtils/DialogMaster/dialogmaster.pri)
+include(vendor/vendor.pri)
 
 HEADERS  += mainwindow.h \
 	editremotedialog.h \
