@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QSortFilterProxyModel>
 #include <QSystemTrayIcon>
+#include <QSessionManager>
 #include "mountmodel.h"
 
 namespace Ui {
@@ -23,6 +24,8 @@ private slots:
 
 	void reloadCurrent(const QModelIndex &uiIndex);
 	void updateAutostart(bool checked);
+
+	void commitShutdown(QSessionManager &sm);
 
 	void on_actionAdd_Host_triggered();
 	void on_actionEdit_Host_triggered();

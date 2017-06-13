@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT       += core gui widgets
+QT += core gui widgets
 
 TARGET = qsshfs
 APPNAME = "Qt sshfs GUI"
@@ -39,16 +39,12 @@ RESOURCES += \
 	res.qrc
 
 win32 {
-	QMAKE_TARGET_PRODUCT = APPNAME
+	QMAKE_TARGET_PRODUCT = $$APPNAME
 	QMAKE_TARGET_COMPANY = $$COMPANY
 	QMAKE_TARGET_COPYRIGHT = "Felix Barz"
 } else:mac {
 	QMAKE_TARGET_BUNDLE_PREFIX = $${BUNDLE_PREFIX}.
 }
 
-inbin.path = /usr/bin
-inbin.files = $$TARGET
-indsk.path = /usr/share/applications/
-indsk.files = de.skycoder42.$${TARGET}.desktop
-
-INSTALLS += inbin indsk
+target.path = $$[QT_INSTALL_BINS]
+INSTALLS += target

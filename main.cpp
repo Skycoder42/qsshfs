@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 	QApplication::setOrganizationDomain(QStringLiteral(BUNDLE_PREFIX));
 	QApplication::setApplicationDisplayName(QStringLiteral(APPNAME));
 	QApplication::setWindowIcon(QIcon(QStringLiteral(":/icons/main.ico")));
+	QApplication::setFallbackSessionManagementEnabled(false);
 
 	MainWindow w;
 	if(!QApplication::arguments().contains(QStringLiteral("--hidden")))

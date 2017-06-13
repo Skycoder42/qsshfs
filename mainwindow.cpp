@@ -59,6 +59,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(model->controller(), &MountController::mountError,
 			this, &MainWindow::mountError);
+
+	connect(qApp, &QApplication::commitDataRequest,
+			this, &MainWindow::commitShutdown);
+	connect(qApp, &QApplication::saveStateRequest,
+			this, &MainWindow::commitShutdown);
 }
 
 MainWindow::~MainWindow()
@@ -126,6 +131,18 @@ void MainWindow::updateAutostart(bool checked)
 		}
 	} else
 		QFile::remove(resPath);
+}
+
+void MainWindow::commitShutdown(QSessionManager &sm)
+{
+	auto args = sm.restartCommand();
+	if(!isVisible()) {
+		if(!args.contains(QStringLiteral("--hidden")))
+			args.append(QStringLiteral("--hidden"));
+	} else
+		args.removeAll(QStringLiteral("--hidden"));
+	sm.setRestartCommand(args);
+	sm.setRestartHint(QSessionManager::RestartIfRunning);
 }
 
 void MainWindow::on_actionAdd_Host_triggered()
