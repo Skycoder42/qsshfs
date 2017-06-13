@@ -4,7 +4,7 @@ QT += core gui widgets
 
 TARGET = qsshfs
 APPNAME = "Qt sshfs GUI"
-VERSION = 1.0.0
+VERSION = 1.1.0
 COMPANY = Skycoder42
 BUNDLE_PREFIX = de.skycoder42
 
