@@ -23,6 +23,9 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTreeView" name="treeView">
+      <property name="contextMenuPolicy">
+       <enum>Qt::ActionsContextMenu</enum>
+      </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
@@ -233,7 +236,8 @@
   </action>
   <action name="action_Reload_Mounts">
    <property name="icon">
-    <iconset theme="view-refresh"/>
+    <iconset theme="view-refresh">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Reload Mounts</string>

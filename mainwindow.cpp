@@ -19,6 +19,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	sortModel->setSourceModel(model);
 	ui->treeView->setModel(sortModel);
+	auto s = new QAction(this);
+	s->setSeparator(true);
+	ui->treeView->addActions({
+								 ui->actionMount,
+								 ui->actionOpen_Folder,
+								 s,
+								 ui->actionEdit_Host,
+								 ui->actionRemove_Host
+							 });
 
 	trayIco->setToolTip(QApplication::applicationDisplayName());
 	auto menu = new QMenu(this);
