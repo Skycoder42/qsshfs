@@ -90,7 +90,7 @@ void EditRemoteDialog::readSshConfig(const QString &fileName)
 	} else {
 		DialogMaster::warning(parentWidget(),
 							  tr("Failed to read ssh config file \"%1\" with error: \"%2\"\n"
-								 "Make shure the file exists and is readable by this user!")
+								 "Make sure the file exists and is readable by this user!")
 							  .arg(fileName)
 							  .arg(sshConfig.errorString()));
 	}
